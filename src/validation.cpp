@@ -3143,6 +3143,10 @@ static bool AcceptBlock(const std::shared_ptr<const CBlock>& pblock, CValidation
     // Write block to history file
     try {
         unsigned int nBlockSize = ::GetSerializeSize(block, SER_DISK, CLIENT_VERSION);
+        unsigned int nextPowerOfTwoExponent = ceil(log2(nBlockSize + 8));
+        unsigned int nextPowerOfTwo = nextPowerOfTwoExponent > 9? pow(2, nextPowerOfTwoExponent) : pow(2,9);
+        nBlockSize = nextPowerOfTwo - 8;
+
         CDiskBlockPos blockPos;
         if (dbp != nullptr)
             blockPos = *dbp;
@@ -3913,6 +3917,10 @@ bool LoadGenesisBlock(const CChainParams& chainparams)
         CBlock &block = const_cast<CBlock&>(chainparams.GenesisBlock());
         // Start new block file
         unsigned int nBlockSize = ::GetSerializeSize(block, SER_DISK, CLIENT_VERSION);
+        unsigned int nextPowerOfTwoExponent = ceil(log2(nBlockSize + 8));
+        unsigned int nextPowerOfTwo = nextPowerOfTwoExponent > 9? pow(2, nextPowerOfTwoExponent) : pow(2,9);
+        nBlockSize = nextPowerOfTwo - 8;
+
         CDiskBlockPos blockPos;
         CValidationState state;
         if (!FindBlockPos(state, blockPos, nBlockSize+8, 0, block.GetBlockTime()))
